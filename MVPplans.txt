@@ -1,0 +1,49 @@
+Działania? Jeżeli link strony to testportal - byle jak,można zrobić regex - by nie przepalało tokenów na każdej innej stronce
+
+Na pewno trzeba dodać zabepieczeń by nie wysyłało miliona zapytań i paliło tokenów.
+
+Przykładowy link do quizu: https://www.testportal.pl/exam/DoTestQuestion.html
+
+
+Div class: question_essence,on ma w sobie paragraf: "Tresc"
+
+Pytania znajdują się w divach z klasą question_answers
+
+Odp. A Ma: label for= "answer_364202821"
+Odp. B Ma: label for = "answer_364202819"
+Odp. C ma answer_364202820
+//Nie to nie ma sensu bo answer_ zawsze sie zmienia...
+
+Trzeba znaleźć inny sposób na znalezienie odpowiedzi.....
+
+const answers = document.querySelectorAll(".question_answers label");
+
+answers.forEach(answer => {
+    console.log(answer.innerText);
+});
+????
+
+Co jest pewne?
+Wszystkie Odpowiedzi znajdują się w div o class question_answers a każda poszczególna odpowiedź w pod-divie "answer_container",pod nimi jast label,a potem div z klasą "answer_body" a pod tym paragraf z treścią pytania.
+
+Trzeba wybrać te pytania
+
++Przygotowac się na pytania otwarte które są w div z klasą "question_essence" a pod nimi jest paragraf z trescią pytania,odpowiedź do pytań otwartych to clasa "question_answers" a w nich jest input Z ID shortAnswerBody_549947361_1 ale te cyferki sie zmieniają więc może wystary szukkać po id "shortAnswerBody"
+
+
+
+To juz brzmi sensowniej...
+
+Prompt wejsciowy:
+
+Jesteś quizowym AI które rozwiązuje quizy ABCD.Odpowiedz na pytanie:
+{{TreśćPytania}} + odpowiedzi ABCD,Teraz trzeba jakoś zrobić by AI ogarnęło co jest ABCD i zrobiło innerHTML zmieniając styl poprawnej odpowiedzi na zielony kolor
+
+Jak ma zwracać?
+Jeżeli pytanie otwarte - Zwraca innerHTML zmieniający styl labela na zielony
+Jeżeli pytanie zamknięte - hintText do inputa???
+
+
+Jak ma działać antytestportal?
+
+Ostrzeżenie to div o id honestRespondentWarning_popup który ma w sobie div o id honestRespondentWarning_popup_box -> Trzeba znaleźć funkcję która wywołuje tego popupa
