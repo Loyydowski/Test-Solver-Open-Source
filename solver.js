@@ -48,10 +48,17 @@ async function solveQuestion() {
         let isClosed = false;
         let isMultiAnswer = false;
 
-        const answerContainers = document.querySelectorAll(".question_answers .answer_container");
+        let answerContainers = document.querySelectorAll(".question_answers .answer_container");
+        if (answerContainers.length === 0) {
+            answerContainers = document.querySelectorAll(".answer_container");
+        }
+        
         // WAŻNE: najpierw sprawdź czy to pytanie otwarte (input tekstowy)
         // Input otwarty ma priorytet - jak istnieje, to nie ma ABCD
-        const openInput = document.querySelector(".question_answers input[id^='shortAnswerBody']");
+        let openInput = document.querySelector(".question_answers input[id^='shortAnswerBody']");
+        if (!openInput) {
+            openInput = document.querySelector("input[id^='shortAnswerBody']");
+        }
 
         if (openInput) {
             // === PYTANIE OTWARTE ===
@@ -105,26 +112,33 @@ Pytanie: ${newQuestionText}`;
             const aiAnswer = response.answer.trim().toUpperCase();
             console.log("[Test Solver] Odpowiedź AI:", aiAnswer);
 
-            if (isClosed) {
-                // Wyciągamy wszystkie litery z odpowiedzi (obsługa "BC", "B C", "B, C")
-                const letters = aiAnswer.match(/[A-Z]/g);
-                if (letters && letters.length > 0) {
-                    letters.forEach(letter => {
-                        const index = letter.charCodeAt(0) - 65;
-                        if (index >= 0 && index < answerContainers.length) {
-                            const targetContainer = answerContainers[index].querySelector("label") || answerContainers[index];
-                        if (tryb === "dyskretny") {
-                            targetContainer.style.color = "rgb(0, 33, 71)";
-                                        }
-                             else {
-                                targetContainer.style.color = "green";
-                                targetContainer.style.fontWeight = "";
-                            }
-                            console.log("[Test Solver] Zaznaczono odpowiedź:", letter);
+if (isClosed) {
+            // Wyciągamy wszystkie litery z odpowiedzi (obsługa "BC", "B C", "B, C")
+            const letters = aiAnswer.match(/[A-Z]/g);
+            if (letters && letters.length > 0) {
+                letters.forEach(letter => {
+                    const index = letter.charCodeAt(0) - 65;
+                    if (index >= 0 && index < answerContainers.length) {
+                        const container = answerContainers[index];
+                        const targetElement = container.querySelector(".answer_body") || 
+                                              container.querySelector("label") || 
+                                              container;
+
+                        const colorValue = (tryb === "dyskretny") ? "rgb(0, 119, 255)" : "#27ae60"
+                        targetElement.style.setProperty("color", colorValue, "important");
+                        
+                        if (tryb !== "dyskretny") {
+                            targetElement.style.setProperty("font-weight", "bold", "important");
+                            //Dodatkowe style - do usunięcia
+                            container.style.setProperty("border-left", `4px solid ${colorValue}`, "important");
+                            container.style.setProperty("padding-left", "5px", "important");
                         }
-                    });
-                }
+
+                        console.log("[Test Solver] Zaznaczono odpowiedź:", letter);
+                    }
+                });
             }
+        }
              else if (openInput) {
                 openInput.placeholder = `${response.answer}`;
                 openInput.style.borderColor = "#4CAF50";
