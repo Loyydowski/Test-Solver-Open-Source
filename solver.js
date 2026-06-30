@@ -108,17 +108,14 @@ Pytanie: ${newQuestionText}`;
                         const index = letter.charCodeAt(0) - 65;
                         if (index >= 0 && index < answerContainers.length) {
                             const targetContainer = answerContainers[index].querySelector("label") || answerContainers[index];
-                            targetContainer.style.backgroundColor = "#4CAF50";
-                            targetContainer.style.color = "white";
-                            targetContainer.style.borderRadius = "6px";
-                            targetContainer.style.transition = "background-color 0.3s";
-                            targetContainer.style.padding = "5px";
+                            targetContainer.style.color = "green";
                             console.log("[Test Solver] Zaznaczono odpowiedź:", letter);
                         }
                     });
                 }
-            } else if (openInput) {
-                openInput.placeholder = `💡 AI: ${response.answer}`;
+            }
+             else if (openInput) {
+                openInput.placeholder = `${response.answer}`;
                 openInput.style.borderColor = "#4CAF50";
                 openInput.style.borderWidth = "2px";
                 openInput.title = response.answer;

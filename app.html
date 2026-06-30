@@ -51,6 +51,23 @@
             <div id="settingsPage" class="page hidden">
                 <div class="page-header">
                     <button class="back-btn" id="backFromSettings">←</button>
+                    <h2>Ustawienia</h2>
+                </div>
+                
+                <div class="nav-grid">
+                    <button class="nav-btn" id="aiConfigBtn">
+                       Konfiguracja AI
+                    </button>
+                    <button class="nav-btn" id="solverConfigBtn">
+                     Konfiguracja solvera
+                    </button>
+                </div>
+            </div>
+
+            <!-- Konfiguracja AI -->
+            <div id="aiConfigPage" class="page hidden">
+                <div class="page-header">
+                    <button class="back-btn" id="backFromAiConfig">←</button>
                     <h2>Konfiguracja AI</h2>
                 </div>
 
@@ -83,6 +100,28 @@
                     <p id="statusMsg" class="status-msg"></p>
                 </div>
             </div>
+            <!-- Konfiguracja solvera -->
+            <div id="solverConfigPage" class="page hidden">
+                <div class="page-header">
+                    <button class="back-btn" id="backFromSolverConfig">←</button>
+                    <h2>Konfiguracja solvera</h2>
+                </div>
+                <div class="form-container">
+                    <div class="input-group">
+                        <label>Wybierz widoczność twoich odpowiedzi</label>
+                        <div class="nav-grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px;">
+                            <button class="nav-btn primary" id="visibilityDefaultBtn" style="justify-content: center;">
+                                Domyślnie
+                            </button>
+                            <button class="nav-btn" id="visibilityDiscreteBtn" disabled style="justify-content: center; opacity: 0.5; cursor: not-allowed;" title="Dostępne wkrótce">
+                                Dyskretny
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- O wtyczce -->
             <div id="aboutPage" class="page hidden">
                 <div class="page-header">

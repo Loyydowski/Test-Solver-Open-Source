@@ -19,7 +19,7 @@ const models = {
     ]
 };
 
-const pages = ['mainMenu', 'settingsPage', 'aboutPage'];
+const pages = ['mainMenu', 'settingsPage', 'aiConfigPage', 'solverConfigPage', 'aboutPage'];
 const showPage = (id) => {
     pages.forEach(p => document.getElementById(p).classList.toggle('hidden', p !== id));
 };
@@ -116,6 +116,11 @@ document.getElementById('settingsBtn').onclick = () => showPage('settingsPage');
 document.getElementById('aboutBtn').onclick = () => showPage('aboutPage');
 document.getElementById('backFromSettings').onclick = () => showPage('mainMenu');
 document.getElementById('backFromAbout').onclick = () => showPage('mainMenu');
+
+document.getElementById('aiConfigBtn').onclick = () => showPage('aiConfigPage');
+document.getElementById('solverConfigBtn').onclick = () => showPage('solverConfigPage');
+document.getElementById('backFromAiConfig').onclick = () => showPage('settingsPage');
+document.getElementById('backFromSolverConfig').onclick = () => showPage('settingsPage');
 
 document.getElementById('screenshotBtn').addEventListener('click', async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
