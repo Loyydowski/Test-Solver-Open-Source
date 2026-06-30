@@ -1,3 +1,5 @@
+let tryb = "domyslny";
+
 const models = {
     openrouter: [
         { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash (Free)' },
@@ -109,6 +111,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             statusText.textContent = saved.solverActive ? 'Aktywny' : 'Nieaktywny';
             statusText.className = saved.solverActive ? 'status-on' : 'status-off';
         }
+        if (saved.tryb) {
+            tryb = saved.tryb;
+            if (tryb === "dyskretny") {
+                document.getElementById('visibilityDiscreteBtn').classList.add('primary');
+                document.getElementById('visibilityDefaultBtn').classList.remove('primary');
+            }
+        }
     }
 });
 
@@ -144,3 +153,25 @@ solverToggle.onchange = async (e) => {
     saved.solverActive = isActive;
     await chrome.storage.local.set({ solverConfig: saved });
 };
+
+document.getElementById('visibilityDefaultBtn').addEventListener('click', async () => {
+    tryb = "domyslny";
+    document.getElementById('visibilityDefaultBtn').classList.add('primary');
+    document.getElementById('visibilityDiscreteBtn').classList.remove('primary');
+    
+    let result = await chrome.storage.local.get('solverConfig');
+    let saved = result.solverConfig || {};
+    saved.tryb = tryb;
+    await chrome.storage.local.set({ solverConfig: saved });
+});
+
+document.getElementById('visibilityDiscreteBtn').addEventListener('click', async () => {
+    tryb = "dyskretny";
+    document.getElementById('visibilityDiscreteBtn').classList.add('primary');
+    document.getElementById('visibilityDefaultBtn').classList.remove('primary');
+    
+    let result = await chrome.storage.local.get('solverConfig');
+    let saved = result.solverConfig || {};
+    saved.tryb = tryb;
+    await chrome.storage.local.set({ solverConfig: saved });
+});

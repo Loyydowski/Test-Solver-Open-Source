@@ -3,6 +3,7 @@
 
 console.log("[Test Solver] Inicjalizacja AI Solvera (ISOLATED world)...");
 
+let tryb = "domyslny";
 let isProcessing = false;
 let currentQuestionText = "";
 let lastRequestTime = 0;
@@ -23,6 +24,10 @@ async function solveQuestion() {
     const config = data.solverConfig;
     if (!config || config.solverActive !== true) {
         return;
+    }
+
+    if (config.tryb) {
+        tryb = config.tryb;
     }
 
     // Pobierz CAŁĄ treść pytania (wszystkie paragrafy, tagi em itp.)
@@ -108,7 +113,13 @@ Pytanie: ${newQuestionText}`;
                         const index = letter.charCodeAt(0) - 65;
                         if (index >= 0 && index < answerContainers.length) {
                             const targetContainer = answerContainers[index].querySelector("label") || answerContainers[index];
-                            targetContainer.style.color = "green";
+                        if (tryb === "dyskretny") {
+                            targetContainer.style.color = "rgb(0, 33, 71)";
+                                        }
+                             else {
+                                targetContainer.style.color = "green";
+                                targetContainer.style.fontWeight = "";
+                            }
                             console.log("[Test Solver] Zaznaczono odpowiedź:", letter);
                         }
                     });
