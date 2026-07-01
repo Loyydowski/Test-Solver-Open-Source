@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-
 :root {
-    /* Tło i powierzchnie (efekt szkła) */
     --bg: #0a0c14;
     --bg-glow-a: #5b4fe0;
     --bg-glow-b: #9747ff;
@@ -11,23 +9,15 @@
     --surface-hover: rgba(255, 255, 255, 0.07);
     --border: rgba(255, 255, 255, 0.09);
     --border-strong: rgba(255, 255, 255, 0.18);
-
-    /* Marka */
     --primary: #8b7bf7;
     --primary-light: #c9bdfb;
     --gradient: linear-gradient(135deg, #5b4fe0 0%, #9747ff 60%, #ff5da2 100%);
     --gradient-soft: linear-gradient(135deg, rgba(91, 79, 224, 0.18) 0%, rgba(151, 71, 255, 0.18) 60%, rgba(255, 93, 162, 0.18) 100%);
-
-    /* Tekst */
     --text-main: #f3f4fa;
     --text-muted: #9aa1b8;
     --text-faint: #707898;
-
-    /* Status */
     --success: #2dd4a3;
     --danger: #ff6391;
-
-    /* Kształt i ruch */
     --radius-s: 10px;
     --radius-m: 14px;
     --radius-l: 20px;

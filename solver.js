@@ -11,15 +11,11 @@ const MIN_REQUEST_INTERVAL_MS = 5000; // Minimum 5s między zapytaniami - ochron
 
 async function solveQuestion() {
     if (isProcessing) return;
-
-    // Rate limiting - nie wysyłaj zapytań zbyt często
     const now = Date.now();
     if (now - lastRequestTime < MIN_REQUEST_INTERVAL_MS) {
         console.log("[Test Solver] Rate limit - zbyt szybko, pomijam.");
         return;
     }
-
-    // Sprawdzenie czy solver jest aktywny
     const data = await chrome.storage.local.get('solverConfig');
     const config = data.solverConfig;
     if (!config || config.solverActive !== true) {
@@ -30,11 +26,19 @@ async function solveQuestion() {
         tryb = config.tryb;
     }
 
-    // Pobierz CAŁĄ treść pytania (wszystkie paragrafy, tagi em itp.)
-    const questionBlock = document.querySelector(".question_essence");
-    if (!questionBlock) return;
+    const isWayground = window.location.hostname.includes("wayground.com") || window.location.hostname.includes("quizizz.com");
 
-    const newQuestionText = questionBlock.innerText.trim();
+    let newQuestionText = "";
+    if (isWayground) {
+        const questionElements = document.querySelectorAll(".question-text-color");
+        if (questionElements.length === 0) return;
+        newQuestionText = Array.from(questionElements).map(el => el.innerText.trim()).filter(t => t).join("\n");
+    } else {
+        const questionBlock = document.querySelector(".question_essence");
+        if (!questionBlock) return;
+        newQuestionText = questionBlock.innerText.trim();
+    }
+
     if (!newQuestionText || newQuestionText === currentQuestionText) return;
 
     isProcessing = true;
@@ -48,16 +52,24 @@ async function solveQuestion() {
         let isClosed = false;
         let isMultiAnswer = false;
 
-        let answerContainers = document.querySelectorAll(".question_answers .answer_container");
-        if (answerContainers.length === 0) {
-            answerContainers = document.querySelectorAll(".answer_container");
-        }
-        
-        // WAŻNE: najpierw sprawdź czy to pytanie otwarte (input tekstowy)
-        // Input otwarty ma priorytet - jak istnieje, to nie ma ABCD
-        let openInput = document.querySelector(".question_answers input[id^='shortAnswerBody']");
-        if (!openInput) {
-            openInput = document.querySelector("input[id^='shortAnswerBody']");
+        let answerContainers = [];
+        let openInput = null;
+
+        if (isWayground) {
+            answerContainers = document.querySelectorAll("button.option, button[role='option']");
+            openInput = document.querySelector("input.fib-text-input, input[data-cy='fib-text-input']");
+        } else {
+            answerContainers = document.querySelectorAll(".question_answers .answer_container");
+            if (answerContainers.length === 0) {
+                answerContainers = document.querySelectorAll(".answer_container");
+            }
+            
+            // WAŻNE: najpierw sprawdź czy to pytanie otwarte (input tekstowy)
+            // Input otwarty ma priorytet - jak istnieje, to nie ma ABCD
+            openInput = document.querySelector(".question_answers input[id^='shortAnswerBody']");
+            if (!openInput) {
+                openInput = document.querySelector("input[id^='shortAnswerBody']");
+            }
         }
 
         if (openInput) {
@@ -82,7 +94,12 @@ Pytanie: ${newQuestionText}`;
 
             const answersText = Array.from(answerContainers).map((container, index) => {
                 const label = String.fromCharCode(65 + index);
-                const answerTextEl = container.querySelector(".answer_body p") || container.querySelector(".answer_body") || container;
+                let answerTextEl;
+                if (isWayground) {
+                    answerTextEl = container.querySelector("#optionText") || container;
+                } else {
+                    answerTextEl = container.querySelector(".answer_body p") || container.querySelector(".answer_body") || container;
+                }
                 return `${label}: ${answerTextEl.innerText.trim()}`;
             }).join("\n");
 
@@ -120,9 +137,14 @@ if (isClosed) {
                     const index = letter.charCodeAt(0) - 65;
                     if (index >= 0 && index < answerContainers.length) {
                         const container = answerContainers[index];
-                        const targetElement = container.querySelector(".answer_body") || 
-                                              container.querySelector("label") || 
-                                              container;
+                        let targetElement;
+                        if (isWayground) {
+                            targetElement = container.querySelector("#optionText") || container;
+                        } else {
+                            targetElement = container.querySelector(".answer_body") || 
+                                          container.querySelector("label") || 
+                                          container;
+                        }
 
                         const colorValue = (tryb === "dyskretny") ? "rgb(0, 119, 255)" : "#27ae60"
                         targetElement.style.setProperty("color", colorValue, "important");
@@ -130,8 +152,12 @@ if (isClosed) {
                         if (tryb !== "dyskretny") {
                             targetElement.style.setProperty("font-weight", "bold", "important");
                             //Dodatkowe style - do usunięcia
-                            container.style.setProperty("border-left", `4px solid ${colorValue}`, "important");
-                            container.style.setProperty("padding-left", "5px", "important");
+                            if (!isWayground) {
+                                container.style.setProperty("border-left", `4px solid ${colorValue}`, "important");
+                                container.style.setProperty("padding-left", "5px", "important");
+                            } else {
+                                container.style.setProperty("border", `4px solid ${colorValue}`, "important");
+                            }
                         }
 
                         console.log("[Test Solver] Zaznaczono odpowiedź:", letter);
@@ -159,7 +185,7 @@ if (isClosed) {
 const questionObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
         if (mutation.type === 'childList' || mutation.type === 'characterData') {
-            if (document.querySelector(".question_essence")) {
+            if (document.querySelector(".question_essence") || document.querySelector(".question-text-color")) {
                 solveQuestion();
                 break;
             }

@@ -58,7 +58,6 @@ Object.defineProperty(window, 'honestRespondentWarning_popup', {
     configurable: true
 });
 
-// Atrapa dla samego obiektu BlurSpy jeżeli event listener przepuści cokolwiek
 let originalBlurSpy;
 Object.defineProperty(window, 'BlurSpy', {
     get: function() {
@@ -70,8 +69,6 @@ Object.defineProperty(window, 'BlurSpy', {
     set: function(val) { originalBlurSpy = val; },
     configurable: true
 });
-
-// Usuwanie popupa ostrzegawczego, gdy tylko pojawi się w DOM
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
@@ -103,22 +100,15 @@ const startObserver = () => {
     }
 };
 startObserver();
-
-// ==========================================
-// Solving methods
-// ==========================================
-
 let isProcessing = false;
 let currentQuestionText = "";
 
 async function solveQuestion() {
     if (isProcessing) return;
-    
-    // Sprawdzenie czy solver jest aktywny
     const data = await chrome.storage.local.get('solverConfig');
     const config = data.solverConfig;
     if (!config || config.solverActive !== true) {
-        return; // Solver wyłączony
+        return;
     }
 
     const questionEl = document.querySelector(".question_essence p") || document.querySelector(".question_essence");
@@ -191,14 +181,14 @@ async function solveQuestion() {
                 openInput.placeholder = `💡 AI: ${response.answer}`;
                 openInput.style.borderColor = "#4CAF50";
                 openInput.style.borderWidth = "2px";
-                openInput.title = response.answer; // tooltip
+                openInput.title = response.answer;
             }
         }
         
     } catch (err) {
         console.error("[Test Solver] Wystąpił błąd podczas rozwiązywania:", err);
     } finally {
-        setTimeout(() => { isProcessing = false; }, 1000); // Mały debounce
+        setTimeout(() => { isProcessing = false; }, 1000);
     }
 }
 const questionObserver = new MutationObserver((mutations) => {

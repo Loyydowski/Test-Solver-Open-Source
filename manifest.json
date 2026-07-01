@@ -13,7 +13,11 @@
         "*://*.testportal.pl/*",
         "*://testportal.pl/*",
         "*://*.testportal.net/*",
-        "*://testportal.net/*"
+        "*://testportal.net/*",
+        "*://*.wayground.com/*",
+        "*://wayground.com/*",
+        "*://*.quizizz.com/*",
+        "*://quizizz.com/*"
       ],
       "js": ["anticheat.js"],
       "run_at": "document_start",
@@ -24,7 +28,11 @@
         "*://*.testportal.pl/*",
         "*://testportal.pl/*",
         "*://*.testportal.net/*",
-        "*://testportal.net/*"
+        "*://testportal.net/*",
+        "*://*.wayground.com/*",
+        "*://wayground.com/*",
+        "*://*.quizizz.com/*",
+        "*://quizizz.com/*"
       ],
       "js": ["solver.js"],
       "run_at": "document_idle"
