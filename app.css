@@ -514,3 +514,36 @@ input:checked + .slider:before {
         transition-duration: 0.001ms !important;
     }
 }
+
+.progress-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 10px;
+}
+.progress-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(var(--bg-glow-a) 0deg, rgba(255,255,255,0.07) 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 16px -4px rgba(91, 79, 224, 0.4);
+    transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+
+.progress-inner {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: var(--surface-solid);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-light);
+    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+    letter-spacing: 0.3px;
+}

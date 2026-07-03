@@ -13,13 +13,23 @@
                     <p class="subtitle">Bo komu chce sie uczyć?</p>
                 </header>
 
-                <div class="card quota-card">
-                    <div class="quota-header">
-                        <span class="quota-title">Dostępne odpowiedzi</span>
-                        <span class="quota-badge" id="quotaCount">Wkrótce</span>
-                    </div>
-                    <p class="quota-info">Monitorujemy limit Twojego API, aby nic Cię nie zaskoczyło.</p>
-                </div>
+<div class="card quota-card">
+    <div class="quota-header">
+        <span class="quota-title">Dostępne odpowiedzi</span>
+        <span class="quota-badge" id="quotaCount">Wkrótce</span>
+    </div>
+    
+    <!-- Okrągły pasek postępu -->
+    <div class="progress-wrapper">
+        <div class="progress-circle" id="apiProgressCircle">
+            <div class="progress-inner">
+                <span id="apiProgressText">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <p class="quota-info">Monitorujemy limit Twojego API, aby nic Cię nie zaskoczyło.</p>
+</div>
 
                 <div class="card solver-card">
                     <div class="solver-info">
@@ -43,8 +53,6 @@
                         <span class="icon">💡</span> O wtyczce
                     </button>
                 </div>
-                
-                <p class="footer">Made with ❤️ by Bartosz Kuba</p>
             </div>
 
             <!-- Ustawienia -->
@@ -139,6 +147,7 @@
                     </ul>
                     <p>Wersja: 0.6 (Alpha)</p>
                     <p>Wesprzyj moją działalność polubienie na Githubie i google web store - to nic nie kosztuje a sprawisz mi usmiech na twarzy</p>
+                 <p class="footer">Made with ❤️ by Bartosz Kuba</p>
                 </div>
             </div>
         </div>

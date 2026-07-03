@@ -175,3 +175,29 @@ document.getElementById('visibilityDiscreteBtn').addEventListener('click', async
     saved.tryb = tryb;
     await chrome.storage.local.set({ solverConfig: saved });
 });
+
+// Przykład Twoich zmiennych z API - NARAZIE STATYCZNE 0 / 20;
+let usedApi = 0;
+let totalApi = 20; //Później zmienić na pobraną wartość przez API.
+
+function updateProgressBar(used, total) {
+    // Zabezpieczenie przed dzieleniem przez 0 i wartościami > 100%
+    let percentage = (total > 0) ? (used / total) * 100 : 0;
+    if (percentage > 100) percentage = 100;
+    
+    // Obliczanie stopni do CSS (100% = 360 stopni)
+    let degrees = (percentage / 100) * 360;
+
+    // Pobieranie elementów
+    const circle = document.getElementById('apiProgressCircle');
+    const text = document.getElementById('apiProgressText');
+    const quotaCount = document.getElementById('quotaCount');
+
+    // Aktualizacja widoku
+    circle.style.background = `conic-gradient(#4a90e2 ${degrees}deg, #e0e0e0 ${degrees}deg)`;
+    text.innerText = `${Math.round(percentage)}%`;
+    quotaCount.innerText = `${used} / ${total}`;
+}
+
+// Wywołanie funkcji
+updateProgressBar(usedApi, totalApi);
