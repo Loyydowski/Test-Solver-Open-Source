@@ -1,3 +1,26 @@
+Co teraz chcemy poprawić?
+-Wyświetlanie odpowiedzi po zrobieniu zrzutu ekranu bardziej clean wyczytywanie.
+-Troszkę bardziej ukryć odpowiedź dla trybu dyskretnego.
+-Poprawić liczenie pozostałych tokenów bo normalnie liczy ilość tokenów a np dla google ai studio jest 20 zapytań a nie milion tokenów.
+-Żeby nie było problemu/Marnowania tokenów - jeżeli trafi się pytanie z obrazkiem to nie marnować zapytania na pytanie tylko pozwolić pierw użytkownikowi zrobić zrzut ekranu najpierw - może oszczędzić dodatkowe zapytanie.
+-Dodać obsługę dla innych form odpowiedzi np. wprowadzania tekstu
+-Dodać autosolver np. Double click odrazu wprowadza odpowiedź ai.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Działania? Jeżeli link strony to testportal - byle jak,można zrobić regex - by nie przepalało tokenów na każdej innej stronce
 
 Na pewno trzeba dodać zabepieczeń by nie wysyłało miliona zapytań i paliło tokenów.

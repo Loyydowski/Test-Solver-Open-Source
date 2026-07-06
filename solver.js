@@ -141,17 +141,24 @@ if (isClosed) {
                         if (isWayground) {
                             targetElement = container.querySelector("#optionText") || container;
                         } else {
-                            targetElement = container.querySelector(".answer_body") || 
+                            targetElement = container.querySelector(".answer_body p") ||
+                                          container.querySelector(".answer_body") || 
                                           container.querySelector("label") || 
                                           container;
                         }
 
-                        const colorValue = (tryb === "dyskretny") ? "rgb(0, 119, 255)" : "#27ae60"
-                        targetElement.style.setProperty("color", colorValue, "important");
-                        
-                        if (tryb !== "dyskretny") {
+                        if (tryb === "dyskretny") {
+                            // Tryb dyskretny: tylko pogrubienie + minimalne przyciemnienie
+                            // Nie zmienia koloru — odpowiedź wygląda jak normalny tekst,
+                            // ale jest nieco grubsza i ciemniejsza niż sąsiednie opcje
+                            targetElement.style.setProperty("font-weight", "700", "important");
+                            targetElement.style.setProperty("color", "#111", "important");
+                            targetElement.style.setProperty("letter-spacing", "0.2px", "important");
+                        } else {
+                            // Tryb domyślny: zielony kolor + pogrubienie + obramowanie
+                            const colorValue = "#27ae60";
+                            targetElement.style.setProperty("color", colorValue, "important");
                             targetElement.style.setProperty("font-weight", "bold", "important");
-                            //Dodatkowe style - do usunięcia
                             if (!isWayground) {
                                 container.style.setProperty("border-left", `4px solid ${colorValue}`, "important");
                                 container.style.setProperty("padding-left", "5px", "important");

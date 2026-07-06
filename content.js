@@ -7,7 +7,7 @@ const originalAddEventListener = EventTarget.prototype.addEventListener;
 EventTarget.prototype.addEventListener = function(type, listener, options) {
     if (type === 'blur' || type === 'visibilitychange' || type === 'mouseleave' || type === 'focusout') {
         console.log(`[Test Solver] Zablokowano event listener dla: ${type}`);
-        return; // Ignorujemy dodanie eventu
+        return;
     }
     return originalAddEventListener.call(this, type, listener, options);
 };
@@ -72,7 +72,7 @@ Object.defineProperty(window, 'BlurSpy', {
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === 1) { // ELEMENT_NODE
+            if (node.nodeType === 1) {
                 const blockPopup = node.id === 'honestRespondentBlockade_popup' ? node : node.querySelector('#honestRespondentBlockade_popup');
                 const warnPopup = node.id === 'honestRespondentWarning_popup' ? node : node.querySelector('#honestRespondentWarning_popup');
                 

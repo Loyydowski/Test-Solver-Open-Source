@@ -119,6 +119,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
+
+    // — QUOTA CIRCLE —
+    await refreshQuotaDisplay();
+
+    // Reaguj natychmiast gdy background.js zapisze nowe dane do storage
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes.usageStats) {
+            console.log('[Test Solver] usageStats changed, refreshing quota display...');
+            refreshQuotaDisplay();
+        }
+    });
+
+    // Fallback: odświeżaj co 3s (na wypadek gdyby onChanged nie zadziałał)
+    setInterval(refreshQuotaDisplay, 3000);
 });
 
 document.getElementById('settingsBtn').onclick = () => showPage('settingsPage');
@@ -176,28 +190,90 @@ document.getElementById('visibilityDiscreteBtn').addEventListener('click', async
     await chrome.storage.local.set({ solverConfig: saved });
 });
 
-// Przykład Twoich zmiennych z API - NARAZIE STATYCZNE 0 / 20;
-let usedApi = 0;
-let totalApi = 20; //Później zmienić na pobraną wartość przez API.
 
-function updateProgressBar(used, total) {
-    // Zabezpieczenie przed dzieleniem przez 0 i wartościami > 100%
-    let percentage = (total > 0) ? (used / total) * 100 : 0;
-    if (percentage > 100) percentage = 100;
-    
-    // Obliczanie stopni do CSS (100% = 360 stopni)
-    let degrees = (percentage / 100) * 360;
+// ─── QUOTA / USAGE TRACKING ─────────────────────────────────────────────────
 
-    // Pobieranie elementów
-    const circle = document.getElementById('apiProgressCircle');
-    const text = document.getElementById('apiProgressText');
-    const quotaCount = document.getElementById('quotaCount');
-
-    // Aktualizacja widoku
-    circle.style.background = `conic-gradient(#4a90e2 ${degrees}deg, #e0e0e0 ${degrees}deg)`;
-    text.innerText = `${Math.round(percentage)}%`;
-    quotaCount.innerText = `${used} / ${total}`;
+/**
+ * Oblicza kolor krawędzi progress circle w zależności od zużycia:
+ *  0–60% → zielony (#2dd4a3)
+ * 61–85% → żółty (#f59e0b)
+ * 86–100% → czerwony (#ff6391)
+ */
+function getProgressColor(percent) {
+    if (percent <= 60) return '#2dd4a3';
+    if (percent <= 85) return '#f59e0b';
+    return '#ff6391';
 }
 
-// Wywołanie funkcji
-updateProgressBar(usedApi, totalApi);
+/**
+ * Formatuje liczbę tokenów do czytelnej postaci (np. 1 234 567).
+ */
+function formatNumber(n) {
+    return Number(n || 0).toLocaleString('pl-PL');
+}
+
+/**
+ * Aktualizuje progress circle i etykiety na podstawie danych
+ * z chrome.storage (usageStats zapisywane przez background.js).
+ */
+async function refreshQuotaDisplay() {
+    const circle    = document.getElementById('apiProgressCircle');
+    const textEl    = document.getElementById('apiProgressText');
+    const badgeEl   = document.getElementById('quotaCount');
+    const infoEl    = document.querySelector('.quota-info');
+
+    const stored = await chrome.storage.local.get('usageStats');
+    const stats  = stored.usageStats;
+
+    // Brak danych — nie było jeszcze żadnego zapytania
+    if (!stats || !stats.date) {
+        circle.style.background = `conic-gradient(rgba(255,255,255,0.07) 0deg, rgba(255,255,255,0.07) 360deg)`;
+        textEl.textContent = '—';
+        badgeEl.textContent = 'Brak danych';
+        if (infoEl) infoEl.textContent = 'Wykonaj pierwsze zapytanie, aby zobaczyć zużycie.';
+        return;
+    }
+
+    // Resetowanie przy nowym dniu (edge-case: popup otwarty przez północy)
+    const today = new Date().toISOString().slice(0, 10);
+    if (stats.date !== today) {
+        circle.style.background = `conic-gradient(rgba(255,255,255,0.07) 0deg, rgba(255,255,255,0.07) 360deg)`;
+        textEl.textContent = '0%';
+        badgeEl.textContent = '0 / —';
+        if (infoEl) infoEl.textContent = 'Nowy dzień — limit zresetowany.';
+        return;
+    }
+
+    const used    = stats.used    || 0;
+    const limit   = stats.limit   || 1;
+    const percent = stats.percent || 0;
+    const color   = getProgressColor(percent);
+    const degrees = (percent / 100) * 360;
+    const isGoogle = stats.provider === 'google';
+
+    // Progress circle — kolor + glowa conic-gradient
+    circle.style.background  = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.07) ${degrees}deg)`;
+    circle.style.boxShadow   = `0 0 16px -4px ${color}88`;
+    textEl.textContent       = `${percent}%`;
+    textEl.style.color       = color;
+
+    // Badge z dokładnymi wartościami
+    if (isGoogle) {
+        badgeEl.textContent = `${formatNumber(used)} / ${formatNumber(limit)} tok.`;
+    } else {
+        badgeEl.textContent = `${used} / ${limit} req.`;
+    }
+
+    // Tekst informacyjny pod kręgiem
+    if (infoEl) {
+        const label = isGoogle ? 'tokenów' : 'zapytań';
+        const modelName = stats.model || '?';
+        if (percent >= 90) {
+            infoEl.textContent = `⚠️ Zbliżasz się do limitu dziennego! (${modelName})`;
+            infoEl.style.color = '#ff6391';
+        } else {
+            infoEl.textContent = `Dziś zużyto ${formatNumber(used)} ${label} (${modelName})`;
+            infoEl.style.color = '';
+        }
+    }
+}
