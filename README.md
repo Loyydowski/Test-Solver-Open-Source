@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center">
 
 # 🧠 Test Solver
@@ -710,3 +711,6 @@ Made with ❤️ by **Bartosz Kuba**
 ⭐ Zostaw gwiazdkę na GitHubie — to nic nie kosztuje, a sprawia wielką radość!
 
 </div>
+=======
+Soon
+>>>>>>> 586e1f2845dda97351fd717fa869c29f439ae6da
