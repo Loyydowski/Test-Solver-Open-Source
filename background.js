@@ -67,7 +67,7 @@ async function handleScreenshotSelection(rect, dpr, tabId) {
         });
 
         // Kadrujemy do zaznaczonego obszaru przez OffscreenCanvas
-        // DPR (Device Pixel Ratio) np. 2 na ekranach Retina — fizyczne px = CSS px * DPR
+        // DPR (Device Pixel Ratio) np. 2 na ekranach Retina - fizyczne px = CSS px * DPR
         const px = (n) => Math.round(n * dpr);
         const cropX      = px(Math.max(0, rect?.x      || 0));
         const cropY      = px(Math.max(0, rect?.y      || 0));
@@ -304,7 +304,7 @@ async function handleSolveQuestion(prompt) {
             }
             delete result._tokens;
         } else {
-            console.warn('[Test Solver BG] Nie zapisuję użycia — result.error:', result.error);
+            console.warn('[Test Solver BG] Nie zapisuję użycia - result.error:', result.error);
         }
 
         return result;

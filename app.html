@@ -1,156 +1,318 @@
-    <!DOCTYPE html>
-    <html lang="pl-PL">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="app.css">
-    </head>
-    <body>
-        <div class="app-container">
-            <!-- Główne menu -->
-            <div id="mainMenu" class="page">
-                <header>
-                    <h1>Test<span class="accent">Solver</span></h1>
-                    <p class="subtitle">Bo komu chce sie uczyć?</p>
-                </header>
+<!DOCTYPE html>
+<html lang="pl-PL">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
 
-<div class="card quota-card">
-    <div class="quota-header">
-        <span class="quota-title">Dostępne odpowiedzi</span>
-        <span class="quota-badge" id="quotaCount">Wkrótce</span>
+<!-- ─────────────────────────────────────────────────────────────
+     Zestaw ikon (inline SVG sprite) - zastępuje emotki.
+     Użycie: <svg class="ico"><use href="#i-nazwa"></use></svg>
+     ───────────────────────────────────────────────────────────── -->
+<svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11l-1 8.5 9.5-11.5H13z"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m11 3 1.7 4.3L17 9l-4.3 1.7L11 15l-1.7-4.3L5 9l4.3-1.7z"/><path d="m18.5 14.5.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2.5"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19a4.5 4.5 0 0 0 .5-9 6 6 0 0 0-11.6-1.6A4 4 0 0 0 6.5 19z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 1 1 8 0v3.5"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2.5 9 4.8-9 4.8-9-4.8z"/><path d="m3 12.2 9 4.8 9-4.8"/><path d="m3 17 9 4.8L21 17"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.7 5.2A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-3.3 4.3M6.7 6.7A18 18 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.3-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m20 6.5-11 11-5-5"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M20.6 17a9 9 0 1 0-17.2 0"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4.5M12 17.5h.01"/></symbol>
+    <symbol id="i-file-check" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9.5 15 2 2 3.5-3.5"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a3 3 0 0 1 5.8 1c0 2-2.9 2.6-2.9 4"/><path d="M12 17.5h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5.2L12 2 4 5.2V12c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-gamepad" viewBox="0 0 24 24"><path d="M6.5 12h3.5M8.25 10.25v3.5M15.5 13h.01M18 10.75h.01"/><path d="M17.3 5.5H6.7A4.7 4.7 0 0 0 2 10.2v3.6a4.7 4.7 0 0 0 4.7 4.7c1.6 0 2.3-.7 3.3-1.7h4c1 1 1.7 1.7 3.3 1.7a4.7 4.7 0 0 0 4.7-4.7v-3.6a4.7 4.7 0 0 0-4.7-4.7z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.8 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1L7.3 14 2.6 9.6l6.5-.9z"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.93.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4.5M12 8h.01"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+</svg>
+
+<div class="app-container">
+
+    <!-- ══════════ Główne menu ══════════ -->
+    <div id="mainMenu" class="page">
+        <header class="brand">
+            <span class="brand-mark"><svg class="ico"><use href="#i-bolt"></use></svg></span>
+            <span class="brand-text">
+                <h1>Test<span class="accent">Solver</span></h1>
+                <p class="subtitle">Bo komu chce się uczyć?</p>
+            </span>
+            <span class="chip">v0.6</span>
+        </header>
+
+        <!-- Status solvera -->
+        <div class="card card-inline solver-card">
+            <span class="tile tile-accent"><svg class="ico"><use href="#i-target"></use></svg></span>
+            <span class="inline-body">
+                <span class="label">Status solvera</span>
+                <span id="statusText" class="status-pill status-off">Nieaktywny</span>
+            </span>
+            <label class="switch" title="Włącz / wyłącz solver">
+                <input type="checkbox" id="solverToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- Limit API -->
+        <div class="card quota-card">
+            <div class="card-head">
+                <span class="card-title">
+                    <svg class="ico ico-sm"><use href="#i-gauge"></use></svg>
+                    Dostępne odpowiedzi
+                </span>
+            </div>
+
+            <div class="quota-body">
+                <div class="ring">
+                    <svg class="ring-svg" viewBox="0 0 48 48">
+                        <circle class="ring-track" cx="24" cy="24" r="20"></circle>
+                        <circle class="ring-value" id="apiProgressCircle" cx="24" cy="24" r="20"></circle>
+                    </svg>
+                    <span class="ring-label" id="apiProgressText">0%</span>
+                </div>
+                <div class="quota-text">
+                    <span class="chip chip-mono" id="quotaCount">Wkrótce</span>
+                    <p class="quota-info">
+                        <svg class="ico ico-xs quota-info-ico"><use href="#i-alert"></use></svg>
+                        <span id="quotaInfoText">Monitorujemy limit Twojego API, aby nic Cię nie zaskoczyło.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" id="screenshotBtn">
+            <svg class="ico ico-sm"><use href="#i-crop"></use></svg>
+            Zrzut ekranu
+        </button>
+
+        <div class="row-list">
+            <button class="row-btn" id="settingsBtn">
+                <span class="tile"><svg class="ico"><use href="#i-sliders"></use></svg></span>
+                <span class="row-body">
+                    <span class="row-title">Ustawienia</span>
+                    <span class="row-sub">Dostawca AI, klucz, tryb działania</span>
+                </span>
+                <svg class="ico ico-sm row-chevron"><use href="#i-chevron-right"></use></svg>
+            </button>
+            <button class="row-btn" id="aboutBtn">
+                <span class="tile"><svg class="ico"><use href="#i-sparkles"></use></svg></span>
+                <span class="row-body">
+                    <span class="row-title">O wtyczce</span>
+                    <span class="row-sub">Plany rozwoju i wersja</span>
+                </span>
+                <svg class="ico ico-sm row-chevron"><use href="#i-chevron-right"></use></svg>
+            </button>
+        </div>
     </div>
-    
-    <!-- Okrągły pasek postępu -->
-    <div class="progress-wrapper">
-        <div class="progress-circle" id="apiProgressCircle">
-            <div class="progress-inner">
-                <span id="apiProgressText">0%</span>
+
+    <!-- ══════════ Ustawienia ══════════ -->
+    <div id="settingsPage" class="page hidden">
+        <div class="page-header">
+            <button class="back-btn" id="backFromSettings" title="Wróć">
+                <svg class="ico ico-sm"><use href="#i-chevron-left"></use></svg>
+            </button>
+            <h2>Ustawienia</h2>
+        </div>
+
+        <div class="row-list">
+            <button class="row-btn" id="aiConfigBtn">
+                <span class="tile"><svg class="ico"><use href="#i-cpu"></use></svg></span>
+                <span class="row-body">
+                    <span class="row-title">Konfiguracja AI</span>
+                    <span class="row-sub">Dostawca, klucz API i model</span>
+                </span>
+                <svg class="ico ico-sm row-chevron"><use href="#i-chevron-right"></use></svg>
+            </button>
+            <button class="row-btn" id="solverConfigBtn">
+                <span class="tile"><svg class="ico"><use href="#i-target"></use></svg></span>
+                <span class="row-body">
+                    <span class="row-title">Konfiguracja solvera</span>
+                    <span class="row-sub">Widoczność podpowiedzi</span>
+                </span>
+                <svg class="ico ico-sm row-chevron"><use href="#i-chevron-right"></use></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════ Konfiguracja AI ══════════ -->
+    <div id="aiConfigPage" class="page hidden">
+        <div class="page-header">
+            <button class="back-btn" id="backFromAiConfig" title="Wróć">
+                <svg class="ico ico-sm"><use href="#i-chevron-left"></use></svg>
+            </button>
+            <h2>Konfiguracja AI</h2>
+        </div>
+
+        <div class="form-container">
+            <div class="input-group">
+                <label for="providerSelect">
+                    <svg class="ico ico-xs"><use href="#i-cloud"></use></svg>
+                    Dostawca usługi
+                </label>
+                <div class="field">
+                    <select id="providerSelect">
+                        <option value="openrouter">OpenRouter (GPT, Claude, Llama)</option>
+                        <option value="google">Google AI Studio (Gemini)</option>
+                        <option value="agentrouter">Agent Router</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="apiKey">
+                    <svg class="ico ico-xs"><use href="#i-lock"></use></svg>
+                    Klucz API
+                </label>
+                <div class="field field-with-action">
+                    <input type="password" id="apiKey" placeholder="Wklej skopiowany klucz..." autocomplete="off" spellcheck="false">
+                    <button type="button" class="field-action" id="toggleKeyBtn" title="Pokaż klucz" aria-label="Pokaż klucz">
+                        <svg class="ico ico-sm"><use href="#i-eye"></use></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="modelSelect">
+                    <svg class="ico ico-xs"><use href="#i-layers"></use></svg>
+                    Model
+                </label>
+                <div class="field">
+                    <select id="modelSelect">
+                        <!-- Opcje ładowane dynamicznie z JS -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-ghost" id="testApiBtn">
+                    <svg class="ico ico-sm"><use href="#i-activity"></use></svg>
+                    Testuj
+                </button>
+                <button class="btn btn-primary" id="saveSettingsBtn">
+                    <svg class="ico ico-sm"><use href="#i-save"></use></svg>
+                    Zapisz
+                </button>
+            </div>
+
+            <p id="statusMsg" class="status-msg"></p>
+        </div>
+    </div>
+
+    <!-- ══════════ Konfiguracja solvera ══════════ -->
+    <div id="solverConfigPage" class="page hidden">
+        <div class="page-header">
+            <button class="back-btn" id="backFromSolverConfig" title="Wróć">
+                <svg class="ico ico-sm"><use href="#i-chevron-left"></use></svg>
+            </button>
+            <h2>Konfiguracja solvera</h2>
+        </div>
+
+        <div class="form-container">
+            <span class="section-label">Widoczność Twoich odpowiedzi</span>
+            <div class="row-list">
+                <button class="row-btn option is-active" id="visibilityDefaultBtn">
+                    <span class="tile"><svg class="ico"><use href="#i-eye"></use></svg></span>
+                    <span class="row-body">
+                        <span class="row-title">Domyślny</span>
+                        <span class="row-sub">Wyraźne podświetlenie odpowiedzi</span>
+                    </span>
+                    <span class="option-check"><svg class="ico ico-xs"><use href="#i-check"></use></svg></span>
+                </button>
+                <button class="row-btn option" id="visibilityDiscreteBtn">
+                    <span class="tile"><svg class="ico"><use href="#i-eye-off"></use></svg></span>
+                    <span class="row-body">
+                        <span class="row-title">Dyskretny</span>
+                        <span class="row-sub">Subtelne, trudniejsze do zauważenia</span>
+                    </span>
+                    <span class="option-check"><svg class="ico ico-xs"><use href="#i-check"></use></svg></span>
+                </button>
             </div>
         </div>
     </div>
 
-    <p class="quota-info">Monitorujemy limit Twojego API, aby nic Cię nie zaskoczyło.</p>
+    <!-- ══════════ O wtyczce ══════════ -->
+    <div id="aboutPage" class="page hidden">
+        <div class="page-header">
+            <button class="back-btn" id="backFromAbout" title="Wróć">
+                <svg class="ico ico-sm"><use href="#i-chevron-left"></use></svg>
+            </button>
+            <h2>O projekcie</h2>
+        </div>
+
+        <div class="card card-inline">
+            <span class="tile tile-accent"><svg class="ico"><use href="#i-info"></use></svg></span>
+            <span class="inline-body">
+                <span class="row-title">Test Solver</span>
+                <span class="row-sub">Narzędzie stworzone z myślą o pomocy uczniom.</span>
+            </span>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">
+                    <svg class="ico ico-sm"><use href="#i-sparkles"></use></svg>
+                    Plany rozwoju
+                </span>
+            </div>
+            <ul class="feature-list">
+                <li>
+                    <svg class="ico ico-sm"><use href="#i-file-check"></use></svg>
+                    <span>Rozwiązywanie testów na Testportalu</span>
+                </li>
+                <li>
+                    <svg class="ico ico-sm"><use href="#i-help"></use></svg>
+                    <span>Rozwiązywanie testów na Quizizz</span>
+                </li>
+                <li>
+                    <svg class="ico ico-sm"><use href="#i-shield"></use></svg>
+                    <span>AntyTestPortal - swobodne zamykanie karty</span>
+                </li>
+                <li>
+                    <svg class="ico ico-sm"><use href="#i-gamepad"></use></svg>
+                    <span>Kahoot - może być ciężko...</span>
+                </li>
+            </ul>
+        </div>
+
+        <a class="card card-inline support-card"
+           href="https://github.com/Loyydowski/Test-Solver-Open-Source"
+           target="_blank" rel="noopener noreferrer">
+            <span class="tile"><svg class="ico"><use href="#i-star"></use></svg></span>
+            <span class="inline-body">
+                <span class="row-title">Wesprzyj projekt</span>
+                <span class="row-sub">Zostaw gwiazdkę na GitHubie - to nic nie kosztuje, a sprawi mi uśmiech.</span>
+            </span>
+            <span class="support-cta"><svg class="ico ico-sm"><use href="#i-external"></use></svg></span>
+        </a>
+
+        <p class="footer">
+            <svg class="ico ico-xs"><use href="#i-github"></use></svg>
+            Made with
+            <svg class="ico ico-xs ico-heart"><use href="#i-heart"></use></svg>
+            by Bartosz Kuba
+            <span class="footer-sep">·</span>
+            v0.6 Alpha
+        </p>
+    </div>
+
 </div>
 
-                <div class="card solver-card">
-                    <div class="solver-info">
-                        <span class="label">Status Solvera</span>
-                        <span id="statusText" class="status-off">Nieaktywny</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="solverToggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="nav-grid">
-                    <button class="nav-btn primary" id="screenshotBtn">
-                        <span class="icon">📸</span> Zrzut ekranu
-                    </button>
-                    <button class="nav-btn" id="settingsBtn">
-                        <span class="icon">⚙️</span> Ustawienia
-                    </button>
-                    <button class="nav-btn" id="aboutBtn">
-                        <span class="icon">💡</span> O wtyczce
-                    </button>
-                </div>
-            </div>
-
-            <!-- Ustawienia -->
-            <div id="settingsPage" class="page hidden">
-                <div class="page-header">
-                    <button class="back-btn" id="backFromSettings">←</button>
-                    <h2>Ustawienia</h2>
-                </div>
-                
-                <div class="nav-grid">
-                    <button class="nav-btn" id="aiConfigBtn">
-                       Konfiguracja AI
-                    </button>
-                    <button class="nav-btn" id="solverConfigBtn">
-                     Konfiguracja solvera
-                    </button>
-                </div>
-            </div>
-
-            <!-- Konfiguracja AI -->
-            <div id="aiConfigPage" class="page hidden">
-                <div class="page-header">
-                    <button class="back-btn" id="backFromAiConfig">←</button>
-                    <h2>Konfiguracja AI</h2>
-                </div>
-
-                <div class="form-container">
-                    <div class="input-group">
-                        <label>Dostawca usługi</label>
-                        <select id="providerSelect">
-                            <option value="openrouter">OpenRouter (GPT, Claude, Llama)</option>
-                            <option value="google">Google AI Studio (Gemini)</option>
-                            <option value="agentrouter">Agent Router</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Klucz API</label>
-                        <input type="password" id="apiKey" placeholder="Wklej skopiowany klucz...">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Model</label>
-                        <select id="modelSelect">
-                            <!-- Opcje ładowane dynamicznie z JS -->
-                        </select>
-                    </div>
-
-                    <div class="action-buttons">
-                        <button class="btn-test" id="testApiBtn">Testuj połączenie</button>
-                        <button class="btn-save" id="saveSettingsBtn">Zapisz ustawienia</button>
-                    </div>
-                    <p id="statusMsg" class="status-msg"></p>
-                </div>
-            </div>
-            <!-- Konfiguracja solvera -->
-            <div id="solverConfigPage" class="page hidden">
-                <div class="page-header">
-                    <button class="back-btn" id="backFromSolverConfig">←</button>
-                    <h2>Konfiguracja solvera</h2>
-                </div>
-                <div class="form-container">
-                    <div class="input-group">
-                        <label>Wybierz widoczność twoich odpowiedzi</label>
-                        <div class="nav-grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px;">
-                            <button class="nav-btn primary" id="visibilityDefaultBtn" style="justify-content: center;">
-                                Domyślnie
-                            </button>
-                            <button class="nav-btn" id="visibilityDiscreteBtn" style="justify-content: center;">
-                                Dyskretny
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- O wtyczce -->
-            <div id="aboutPage" class="page hidden">
-                <div class="page-header">
-                    <button class="back-btn" id="backFromAbout">←</button>
-                    <h2>O projekcie</h2>
-                </div>
-                <div class="card">
-                    <p>Test Solver to narzędzie stworzone z myślą o pomocy uczniom</p>
-                    <p>Jaki mam zamiar na tą aplikacje?</p>
-                    <ul>
-                        <li>Żeby działało o rozwiązywało test - chociaz na testportalu</li>
-                        <li>Rozwiązywanie testów na quizziz</li>
-                        <li>AntyTestPortal - dzięki czemu możesz zamykać kartę</li>
-                        <li>Rozwiązywanie testów na Kahoot??? Może być ciężko...</li>
-                    </ul>
-                    <p>Wersja: 0.6 (Alpha)</p>
-                    <p>Wesprzyj moją działalność polubienie na Githubie i google web store - to nic nie kosztuje a sprawisz mi usmiech na twarzy</p>
-                 <p class="footer">Made with ❤️ by Bartosz Kuba</p>
-                </div>
-            </div>
-        </div>
-        <script src="app.js"></script>
-    </body>
-    </html>
+<script src="app.js"></script>
+</body>
+</html>

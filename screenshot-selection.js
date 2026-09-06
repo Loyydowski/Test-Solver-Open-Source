@@ -23,21 +23,25 @@
     });
 
     const instructions = document.createElement('div');
-    instructions.textContent = 'Przeciągnij, aby zaznaczyć pytanie';
     Object.assign(instructions.style, {
         position: 'fixed',
         top: '16px', left: '50%',
         transform: 'translateX(-50%)',
-        padding: '8px 18px',
-        background: 'rgba(17, 24, 39, 0.92)',
-        color: '#ffffff',
+        padding: '9px 18px',
+        background: 'rgba(10, 12, 20, 0.94)',
+        border: '1px solid rgba(139, 123, 247, 0.3)',
+        color: '#f3f4fa',
         borderRadius: '999px',
-        fontFamily: "'Inter', Arial, sans-serif",
-        fontSize: '14px',
+        fontFamily: "'Inter', system-ui, sans-serif",
+        fontSize: '13.5px',
         fontWeight: '600',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
+        backdropFilter: 'blur(12px)',
         zIndex: '2147483648',
-        letterSpacing: '0.2px'
+        letterSpacing: '0.1px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '9px'
     });
 
     const selectionBox = document.createElement('div');
@@ -52,6 +56,25 @@
 
     overlay.appendChild(instructions);
     overlay.appendChild(selectionBox);
+
+    // ─── Ikony (inline SVG - bez emotek i bez zewnętrznych zasobów) ─────────
+    const svg = (paths, opts = {}) =>
+        `<svg viewBox="0 0 24 24" width="${opts.size || 20}" height="${opts.size || 20}" fill="none" ` +
+        `stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ` +
+        `style="display:block;flex-shrink:0;">${paths}</svg>`;
+
+    const ICONS = {
+        check: svg('<circle cx="12" cy="12" r="9"/><path d="m8.5 12.3 2.4 2.4 4.6-5"/>'),
+        alert: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.5h.01"/>'),
+        bulb:  svg('<path d="M9.5 18h5M10.5 21.5h3"/><path d="M15.2 14.2a5.5 5.5 0 1 0-6.4 0c.7.5 1.1 1.2 1.2 1.8h4c.1-.6.5-1.3 1.2-1.8z"/>'),
+        close: svg('<path d="M17 7 7 17M7 7l10 10"/>', { size: 15 }),
+        crop:  svg('<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>', { size: 16 })
+    };
+
+    instructions.innerHTML =
+        `<span style="display:flex;color:#8b7bf7;">${ICONS.crop}</span>` +
+        `<span>Przeciągnij, aby zaznaczyć pytanie</span>`;
+
     function showResultPopup(answer, isError) {
         // Usuń ewentualny poprzedni popup
         const old = document.getElementById('test-solver-ai-result-popup');
@@ -60,8 +83,8 @@
         const popup = document.createElement('div');
         popup.id = 'test-solver-ai-result-popup';
 
-        const isMulti = !isError && answer.match(/^[A-Z](\s[A-Z])+$/);
-        const icon = isError ? '❌' : (answer.match(/^[A-Za-z\s]+$/) && answer.length <= 6) ? '✅' : '💡';
+        const isShortAnswer = !isError && answer.match(/^[A-Za-z\s]+$/) && answer.length <= 6;
+        const icon = isError ? ICONS.alert : isShortAnswer ? ICONS.check : ICONS.bulb;
 
         Object.assign(popup.style, {
             position: 'fixed',
@@ -89,18 +112,24 @@
                 }
                 #test-solver-ai-result-popup * { box-sizing: border-box; }
             </style>
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                <span style="font-size:20px;line-height:1;">${icon}</span>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                <span style="
+                    display:flex;align-items:center;justify-content:center;
+                    width:30px;height:30px;border-radius:9px;flex-shrink:0;
+                    color:${isError ? '#ff6391' : '#8b7bf7'};
+                    background:${isError ? 'rgba(255,99,145,0.12)' : 'rgba(139,123,247,0.14)'};
+                    border:1px solid ${isError ? 'rgba(255,99,145,0.28)' : 'rgba(139,123,247,0.3)'};
+                ">${icon}</span>
                 <span style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:${isError ? '#ff6391' : '#8b7bf7'};">
                     ${isError ? 'Błąd AI' : 'Odpowiedź AI'}
                 </span>
                 <button id="ts-close-popup" style="
-                    margin-left:auto;background:rgba(255,255,255,0.07);border:none;
+                    margin-left:auto;background:rgba(255,255,255,0.06);border:none;
                     color:#9aa1b8;border-radius:8px;width:26px;height:26px;
                     display:flex;align-items:center;justify-content:center;
-                    cursor:pointer;font-size:16px;line-height:1;flex-shrink:0;
-                    transition:background 0.15s;
-                " title="Zamknij">×</button>
+                    cursor:pointer;line-height:1;flex-shrink:0;
+                    transition:background 0.15s,color 0.15s;
+                " title="Zamknij">${ICONS.close}</button>
             </div>
             <div style="
                 background:rgba(255,255,255,0.04);
@@ -116,7 +145,7 @@
                 text-align:${answer.length < 10 ? 'center' : 'left'};
             ">${answer}</div>
             <p style="margin:8px 0 0;font-size:11px;color:#707898;line-height:1.5;">
-                ${isError ? 'Spróbuj ponownie lub sprawdź klucz API.' : 'Kliknij × lub Escape, aby zamknąć.'}
+                ${isError ? 'Spróbuj ponownie lub sprawdź klucz API.' : 'Naciśnij Escape lub kliknij ikonę, aby zamknąć.'}
             </p>
         `;
 

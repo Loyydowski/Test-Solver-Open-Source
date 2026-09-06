@@ -29,8 +29,23 @@ const showPage = (id) => {
 const providerSelect = document.getElementById('providerSelect');
 const modelSelect = document.getElementById('modelSelect');
 const apiKeyInput = document.getElementById('apiKey');
+const toggleKeyBtn = document.getElementById('toggleKeyBtn');
 const solverToggle = document.getElementById('solverToggle');
 const statusText = document.getElementById('statusText');
+const visibilityDefaultBtn = document.getElementById('visibilityDefaultBtn');
+const visibilityDiscreteBtn = document.getElementById('visibilityDiscreteBtn');
+
+/** Ustawia etykietę statusu solvera (kropka + kolor pochodzą z CSS). */
+function setSolverStatus(isActive) {
+    statusText.textContent = isActive ? 'Aktywny' : 'Nieaktywny';
+    statusText.className = `status-pill ${isActive ? 'status-on' : 'status-off'}`;
+}
+
+/** Podświetla wybraną opcję widoczności odpowiedzi. */
+function markVisibility(mode) {
+    visibilityDefaultBtn.classList.toggle('is-active', mode !== 'dyskretny');
+    visibilityDiscreteBtn.classList.toggle('is-active', mode === 'dyskretny');
+}
 
 function updateModelList() {
     const selectedProvider = providerSelect.value;
@@ -56,22 +71,30 @@ document.getElementById('saveSettingsBtn').addEventListener('click', async () =>
     showStatus('Zapisano pomyślnie!', 'success');
 });
 
+toggleKeyBtn.addEventListener('click', () => {
+    const revealed = apiKeyInput.type === 'text';
+    apiKeyInput.type = revealed ? 'password' : 'text';
+    toggleKeyBtn.querySelector('use').setAttribute('href', revealed ? '#i-eye' : '#i-eye-off');
+    const title = revealed ? 'Pokaż klucz' : 'Ukryj klucz';
+    toggleKeyBtn.title = title;
+    toggleKeyBtn.setAttribute('aria-label', title);
+});
+
 document.getElementById('testApiBtn').addEventListener('click', async () => {
     const key = apiKeyInput.value;
     const provider = providerSelect.value;
-    const msg = document.getElementById('statusMsg');
     if (!key) {
         showStatus('Wprowadź klucz API', 'danger');
         return;
     }
-    
+
     if (!provider || !modelSelect.value) {
         showStatus('Wybierz dostawcę i model', 'danger');
         return;
     }
-    
-    msg.textContent = 'Łączenie...';
-    
+
+    showStatus('Łączenie...', 'info');
+
     let url = provider === 'openrouter' 
         ? 'https://openrouter.ai/api/v1/models' 
         : provider === 'agentrouter'
@@ -91,10 +114,24 @@ document.getElementById('testApiBtn').addEventListener('click', async () => {
         showStatus('Błąd sieci', 'danger');
     }
 });
+const STATUS_ICONS = {
+    success: 'i-check',
+    error: 'i-alert',
+    info: 'i-activity'
+};
+
+/**
+ * Wyświetla komunikat pod formularzem wraz z pasującą ikoną.
+ * @param {string} txt  treść komunikatu
+ * @param {'success'|'error'|'danger'|'info'} type  rodzaj komunikatu
+ */
 function showStatus(txt, type) {
     const msg = document.getElementById('statusMsg');
-    msg.textContent = txt;
-    msg.style.color = type === 'success' ? '#22c55e' : '#ef4444';
+    const kind = type === 'success' ? 'success' : type === 'info' ? 'info' : 'error';
+
+    msg.className = kind === 'info' ? 'status-msg' : `status-msg ${kind}`;
+    msg.innerHTML = `<svg class="ico ico-xs"><use href="#${STATUS_ICONS[kind]}"></use></svg><span></span>`;
+    msg.querySelector('span').textContent = txt;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -108,19 +145,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (saved.apiKey) apiKeyInput.value = saved.apiKey;
         if (saved.solverActive !== undefined) {
             solverToggle.checked = saved.solverActive;
-            statusText.textContent = saved.solverActive ? 'Aktywny' : 'Nieaktywny';
-            statusText.className = saved.solverActive ? 'status-on' : 'status-off';
+            setSolverStatus(saved.solverActive);
         }
         if (saved.tryb) {
             tryb = saved.tryb;
-            if (tryb === "dyskretny") {
-                document.getElementById('visibilityDiscreteBtn').classList.add('primary');
-                document.getElementById('visibilityDefaultBtn').classList.remove('primary');
-            }
+            markVisibility(tryb);
         }
     }
 
-    // — QUOTA CIRCLE —
+    // - QUOTA CIRCLE -
     await refreshQuotaDisplay();
 
     // Reaguj natychmiast gdy background.js zapisze nowe dane do storage
@@ -159,36 +192,26 @@ document.getElementById('screenshotBtn').addEventListener('click', async () => {
 
 solverToggle.onchange = async (e) => {
     const isActive = e.target.checked;
-    statusText.textContent = isActive ? 'Aktywny' : 'Nieaktywny';
-    statusText.className = isActive ? 'status-on' : 'status-off';
-    
+    setSolverStatus(isActive);
+
     let result = await chrome.storage.local.get('solverConfig');
     let saved = result.solverConfig || {};
     saved.solverActive = isActive;
     await chrome.storage.local.set({ solverConfig: saved });
 };
 
-document.getElementById('visibilityDefaultBtn').addEventListener('click', async () => {
-    tryb = "domyslny";
-    document.getElementById('visibilityDefaultBtn').classList.add('primary');
-    document.getElementById('visibilityDiscreteBtn').classList.remove('primary');
-    
-    let result = await chrome.storage.local.get('solverConfig');
-    let saved = result.solverConfig || {};
-    saved.tryb = tryb;
-    await chrome.storage.local.set({ solverConfig: saved });
-});
+async function saveVisibility(mode) {
+    tryb = mode;
+    markVisibility(mode);
 
-document.getElementById('visibilityDiscreteBtn').addEventListener('click', async () => {
-    tryb = "dyskretny";
-    document.getElementById('visibilityDiscreteBtn').classList.add('primary');
-    document.getElementById('visibilityDefaultBtn').classList.remove('primary');
-    
     let result = await chrome.storage.local.get('solverConfig');
     let saved = result.solverConfig || {};
-    saved.tryb = tryb;
+    saved.tryb = mode;
     await chrome.storage.local.set({ solverConfig: saved });
-});
+}
+
+visibilityDefaultBtn.addEventListener('click', () => saveVisibility('domyslny'));
+visibilityDiscreteBtn.addEventListener('click', () => saveVisibility('dyskretny'));
 
 
 // ─── QUOTA / USAGE TRACKING ─────────────────────────────────────────────────
@@ -213,7 +236,35 @@ function formatNumber(n) {
 }
 
 /**
- * Aktualizuje progress circle i etykiety na podstawie danych
+ * Skrócony zapis dużych liczb dla wąskiego badge'a (np. 812 tys. / 1 mln).
+ */
+function formatCompact(n) {
+    const value = Number(n || 0);
+    if (value < 10000) return value.toLocaleString('pl-PL');
+    return new Intl.NumberFormat('pl-PL', {
+        notation: 'compact',
+        maximumFractionDigits: 1
+    }).format(value);
+}
+
+// Obwód pierścienia SVG (r = 20) - używany do sterowania stroke-dashoffset.
+const RING_CIRCUMFERENCE = 2 * Math.PI * 20;
+
+/**
+ * Rysuje wypełnienie pierścienia postępu.
+ * @param {SVGCircleElement} circle
+ * @param {number} percent  0–100
+ * @param {string|null} color  kolor obrysu (null = neutralny z CSS)
+ */
+function setRing(circle, percent, color) {
+    const clamped = Math.max(0, Math.min(100, percent));
+    circle.style.strokeDasharray  = `${RING_CIRCUMFERENCE}`;
+    circle.style.strokeDashoffset = `${RING_CIRCUMFERENCE * (1 - clamped / 100)}`;
+    circle.style.stroke = color || '';
+}
+
+/**
+ * Aktualizuje pierścień postępu i etykiety na podstawie danych
  * z chrome.storage (usageStats zapisywane przez background.js).
  */
 async function refreshQuotaDisplay() {
@@ -221,59 +272,62 @@ async function refreshQuotaDisplay() {
     const textEl    = document.getElementById('apiProgressText');
     const badgeEl   = document.getElementById('quotaCount');
     const infoEl    = document.querySelector('.quota-info');
+    const infoTextEl = document.getElementById('quotaInfoText');
+
+    const setInfo = (txt, isWarning) => {
+        if (infoTextEl) infoTextEl.textContent = txt;
+        if (infoEl) infoEl.classList.toggle('is-warn', Boolean(isWarning));
+    };
 
     const stored = await chrome.storage.local.get('usageStats');
     const stats  = stored.usageStats;
 
-    // Brak danych — nie było jeszcze żadnego zapytania
+    // Brak danych - nie było jeszcze żadnego zapytania
     if (!stats || !stats.date) {
-        circle.style.background = `conic-gradient(rgba(255,255,255,0.07) 0deg, rgba(255,255,255,0.07) 360deg)`;
-        textEl.textContent = '—';
+        setRing(circle, 0, null);
+        textEl.textContent = '-';
+        textEl.style.color = '';
         badgeEl.textContent = 'Brak danych';
-        if (infoEl) infoEl.textContent = 'Wykonaj pierwsze zapytanie, aby zobaczyć zużycie.';
+        setInfo('Wykonaj pierwsze zapytanie, aby zobaczyć zużycie.', false);
         return;
     }
 
     // Resetowanie przy nowym dniu (edge-case: popup otwarty przez północy)
     const today = new Date().toISOString().slice(0, 10);
     if (stats.date !== today) {
-        circle.style.background = `conic-gradient(rgba(255,255,255,0.07) 0deg, rgba(255,255,255,0.07) 360deg)`;
+        setRing(circle, 0, null);
         textEl.textContent = '0%';
-        badgeEl.textContent = '0 / —';
-        if (infoEl) infoEl.textContent = 'Nowy dzień — limit zresetowany.';
+        textEl.style.color = '';
+        badgeEl.textContent = '0 / -';
+        setInfo('Nowy dzień - limit zresetowany.', false);
         return;
     }
 
-    const used    = stats.used    || 0;
-    const limit   = stats.limit   || 1;
-    const percent = stats.percent || 0;
-    const color   = getProgressColor(percent);
-    const degrees = (percent / 100) * 360;
+    const used     = stats.used    || 0;
+    const limit    = stats.limit   || 1;
+    const percent  = stats.percent || 0;
+    const color    = getProgressColor(percent);
     const isGoogle = stats.provider === 'google';
 
-    // Progress circle — kolor + glowa conic-gradient
-    circle.style.background  = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.07) ${degrees}deg)`;
-    circle.style.boxShadow   = `0 0 16px -4px ${color}88`;
-    textEl.textContent       = `${percent}%`;
-    textEl.style.color       = color;
+    setRing(circle, percent, color);
+    textEl.textContent = `${percent}%`;
+    textEl.style.color = color;
 
     // Badge z dokładnymi wartościami
     if (isGoogle) {
-        badgeEl.textContent = `${formatNumber(used)} / ${formatNumber(limit)} tok.`;
+        badgeEl.textContent = `${formatCompact(used)} / ${formatCompact(limit)} tok.`;
+        badgeEl.title = `${formatNumber(used)} / ${formatNumber(limit)} tokenów`;
     } else {
         badgeEl.textContent = `${used} / ${limit} req.`;
+        badgeEl.title = `${used} z ${limit} zapytań`;
     }
 
-    // Tekst informacyjny pod kręgiem
-    if (infoEl) {
-        const label = isGoogle ? 'tokenów' : 'zapytań';
-        const modelName = stats.model || '?';
-        if (percent >= 90) {
-            infoEl.textContent = `⚠️ Zbliżasz się do limitu dziennego! (${modelName})`;
-            infoEl.style.color = '#ff6391';
-        } else {
-            infoEl.textContent = `Dziś zużyto ${formatNumber(used)} ${label} (${modelName})`;
-            infoEl.style.color = '';
-        }
+    // Tekst informacyjny obok pierścienia
+    const label = isGoogle ? 'tokenów' : 'zapytań';
+    const modelName = stats.model || '?';
+    if (percent >= 90) {
+        setInfo(`Zbliżasz się do limitu dziennego! (${modelName})`, true);
+    } else {
+        setInfo(`Dziś zużyto ${formatNumber(used)} ${label} (${modelName})`, false);
     }
-}
+}

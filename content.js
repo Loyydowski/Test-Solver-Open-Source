@@ -178,7 +178,7 @@ async function solveQuestion() {
                     }
                 }
             } else if (openInput) {
-                openInput.placeholder = `💡 AI: ${response.answer}`;
+                openInput.placeholder = `AI: ${response.answer}`;
                 openInput.style.borderColor = "#4CAF50";
                 openInput.style.borderWidth = "2px";
                 openInput.title = response.answer;

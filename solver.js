@@ -149,7 +149,7 @@ if (isClosed) {
 
                         if (tryb === "dyskretny") {
                             // Tryb dyskretny: tylko pogrubienie + minimalne przyciemnienie
-                            // Nie zmienia koloru — odpowiedź wygląda jak normalny tekst,
+                            // Nie zmienia koloru - odpowiedź wygląda jak normalny tekst,
                             // ale jest nieco grubsza i ciemniejsza niż sąsiednie opcje
                             targetElement.style.setProperty("font-weight", "700", "important");
                             targetElement.style.setProperty("color", "#111", "important");
